@@ -87,6 +87,8 @@ else:
 # Check any eBay URLs flagged for full-size check
 if len(possible_ebay_fulls) > 0:
     for url in possible_ebay_fulls:
+        # Rebuild the URL to likely full-size image URL
+        # Note "s-l1600" is the usual filename for large eBay images
         url_comps = url.split('/')
         url_comps[6] = "s-l1600.jpg"
         test_url = "/".join(url_comps)
