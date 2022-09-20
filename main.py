@@ -1,3 +1,5 @@
+from filecmp import cmp
+from pathlib import Path
 import random
 import re
 import string
@@ -20,6 +22,7 @@ args = sys.argv
 args_c = len(args) - 1
 site = ""
 option = 3
+remove_dups = True
 if args_c == 0:
     print("ERROR: no URL given")
     exit()
@@ -27,6 +30,8 @@ if args_c > 0:
     site = args[1]
 if args_c > 1:
     option = int(args[2])
+if args_c > 2:
+    remove_dups = bool(int(args[3]))
 
 # Setup site info
 site_info = tldextract.extract(site)
@@ -36,10 +41,14 @@ soup = BeautifulSoup(response.text, 'html.parser')
 # Prepare directory for this session's downloads
 newdir = os.path.join(curdir, datetime.now().strftime("%Y%m%d_%H%M%S") + "_" + site_info.domain)
 os.makedirs(newdir)
+newpath = Path(newdir)
 
 # 'Surface-level' (HTML) sweep
 img_tags = soup.find_all('img')
-urls = [img['src'] for img in img_tags]
+urls = []
+for img in img_tags:
+    if img.has_key("src"):
+        urls.append(img["src"])
 
 possible_ebay_fulls = []
 
@@ -67,6 +76,8 @@ if len(urls) > 0:
                 response = requests.get(url)
                 f.write(response.content)
 
+        # Flag if URL is eBay image and should be checked again
+        # for full-size version
         if "i.ebayimg.com/images/g/" in url:
             possible_ebay_fulls.append(url)
 
@@ -153,3 +164,28 @@ if option > 2:
         exit()
         if "src" in script:
             var_dump(script)
+
+# Remove duplicates if applicable
+if remove_dups:
+    files = sorted(os.listdir(newpath))
+    dups = []
+
+    for file in files:
+        if_dup = False
+  
+        for class_ in dups:
+            if_dup = cmp(newpath / file, newpath / class_[0], shallow=False)
+
+            if if_dup:
+                class_.append(file)
+                break
+    
+        if not if_dup:
+            dups.append([file])
+
+    for dup in dups:
+        dup_c = len(dup)
+        if dup_c > 1:
+            for i in range(dup_c - 1):
+                print("Removing duplicate " + dup[i])
+                os.remove(os.path.join(newdir, dup[i]))
