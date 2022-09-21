@@ -11,6 +11,14 @@ from bs4 import BeautifulSoup
 import tldextract
 import sys
 
+# Possible user agent strings to use
+agents = [ "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:104.0) Gecko/20100101 Firefox/104.0", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36 Edg/105.0.1343.42" ]
+
+def random_header():
+    global agents
+    random_user_agent = random.choice(agents)
+    return { 'User-Agent': random_user_agent }
+
 # Prepare directory for all downloads
 curdir = os.getcwd()
 curdir = os.path.join(curdir, "scrapes")
@@ -35,7 +43,7 @@ if args_c > 2:
 
 # Setup site info
 site_info = tldextract.extract(site)
-response = requests.get(site)
+response = requests.get(site, headers=random_header())
 soup = BeautifulSoup(response.text, 'html.parser')
 
 # Prepare directory for this session's downloads
@@ -67,14 +75,14 @@ if option == 1 or option == 4:
                     if 'http' not in url:
                         # Handle relative image links
                         url = '{}{}'.format(site, url)
-                    response = requests.get(url)
+                    response = requests.get(url, headers=random_header())
                     f.write(response.content)
             else:
                 with open(os.path.join(newdir, "html_" + filen.group(1)), 'wb') as f:
                     if 'http' not in url:
                         # Handle relative image links
                         url = '{}{}'.format(site, url)
-                    response = requests.get(url)
+                    response = requests.get(url, headers=random_header())
                     f.write(response.content)
 
             # Flag if URL is eBay image and should be checked again
@@ -105,14 +113,14 @@ if option == 1 or option == 4:
                     if 'http' not in test_url:
                         # Handle relative image links
                         test_url = '{}{}'.format(site, test_url)
-                    response = requests.get(test_url)
+                    response = requests.get(test_url, headers=random_header())
                     f.write(response.content)
             else:
                 with open(os.path.join(newdir, "full_" + filen.group(1)), 'wb') as f:
                     if 'http' not in test_url:
                         # Handle relative image links
                         test_url = '{}{}'.format(site, test_url)
-                    response = requests.get(test_url)
+                    response = requests.get(test_url, headers=random_header())
                     f.write(response.content)
 
 # CSS level sweep
@@ -123,7 +131,7 @@ if option == 2 or option == 4:
     if len(urls) > 0:
         for url in urls:
             if ".css" in url:
-                css_resp = requests.get(url)
+                css_resp = requests.get(url, headers=random_header())
                 css_txt = str(css_resp.text)
 
                 # Look for any background URLs
@@ -148,14 +156,14 @@ if option == 2 or option == 4:
                             if 'http' not in iurl:
                                 # Handle relative image links
                                 url = '{}{}'.format(site, url)
-                            response = requests.get(iurl)
+                            response = requests.get(iurl, headers=random_header())
                             f.write(response.content)
                     else:
                         with open(os.path.join(newdir, "css_" + filen.group(1)), 'wb') as f:
                             if 'http' not in iurl:
                                 # Handle relative image links
                                 url = '{}{}'.format(site, url)
-                            response = requests.get(iurl)
+                            response = requests.get(iurl, headers=random_header())
                             f.write(response.content)
     else:
         print("No CSS file links found to complete CSS sweep")
@@ -174,7 +182,7 @@ if option == 3 or option == 4:
 
     if len(urls) > 0:
         for url in urls:
-            js_resp = requests.get(url)
+            js_resp = requests.get(url, headers=random_header())
             js_txt = str(js_resp.text)
 
             imgs = re.findall("(https?:\/\/.*\.(?:jpg|jpeg|webp|gif|png|svg))", js_txt)
@@ -191,14 +199,14 @@ if option == 3 or option == 4:
                         if 'http' not in iurl:
                             # Handle relative image links
                             url = '{}{}'.format(site, url)
-                        response = requests.get(iurl)
+                        response = requests.get(iurl, headers=random_header())
                         f.write(response.content)
                 else:
                     with open(os.path.join(newdir, "js_" + filen.group(1)), 'wb') as f:
                         if 'http' not in iurl:
                             # Handle relative image links
                             url = '{}{}'.format(site, url)
-                        response = requests.get(iurl)
+                        response = requests.get(iurl, headers=random_header())
                         f.write(response.content)  
     else:
         print("No images found with JS sweep")
