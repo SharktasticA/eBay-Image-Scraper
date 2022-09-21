@@ -10,13 +10,16 @@ from datetime import datetime
 from bs4 import BeautifulSoup
 import tldextract
 import sys
+from time import sleep
 
 # Possible user agent strings to use
 agents = [ "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:104.0) Gecko/20100101 Firefox/104.0", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36 Edg/105.0.1343.42" ]
 
+# Make random header for use with requests.get()
 def random_header():
     global agents
     random_user_agent = random.choice(agents)
+    sleep(random.uniform(0, 0.1))
     return { 'User-Agent': random_user_agent }
 
 # Prepare directory for all downloads
