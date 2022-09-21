@@ -81,7 +81,6 @@ if option == 1 or option == 4:
             # for full-size version
             if "i.ebayimg.com/images/g/" in url:
                 possible_ebay_fulls.append(url)
-
     else:
         print("No images found with HTML sweep")
 
@@ -133,40 +132,76 @@ if option == 2 or option == 4:
                 bg_imgs = re.findall(r'background-image:url\((.*?)\)', css_txt)
                 
                 imgs = bg_urls + bg_imgs
-                for url in imgs:
-                    filen = re.search(r'/([\w_-]+[.](jpg|jpeg|webp|gif|png|svg))$', url)
+                for iurl in imgs:
+                    if iurl[:2] == "//":
+                        iurl = "https:" + iurl
+
+                    filen = re.search(r'/([\w_-]+[.](jpg|jpeg|webp|gif|png|svg))$', iurl)
                     if not filen:
-                        print("Skipping " + format(url) + " due to lack of compatible image found")
+                        print("Skipping " + format(iurl) + " due to lack of compatible image found")
                         continue
 
                     if os.path.exists(os.path.join(newdir, "css_" + filen.group(1))):
                         print("Image with this filename already exists, appending random str to new file filename...")
                         to_append = ''.join(random.choice(string.ascii_letters) for i in range(4))
                         with open(os.path.join(newdir, "css_" + to_append + "_" + filen.group(1)), 'wb') as f:
-                            if 'http' not in url:
+                            if 'http' not in iurl:
                                 # Handle relative image links
                                 url = '{}{}'.format(site, url)
-                            response = requests.get(url)
+                            response = requests.get(iurl)
                             f.write(response.content)
                     else:
                         with open(os.path.join(newdir, "css_" + filen.group(1)), 'wb') as f:
-                            if 'http' not in url:
+                            if 'http' not in iurl:
                                 # Handle relative image links
                                 url = '{}{}'.format(site, url)
-                            response = requests.get(url)
+                            response = requests.get(iurl)
                             f.write(response.content)
     else:
         print("No CSS file links found to complete CSS sweep")
 
 # JS level sweep
-# TODO
+# TODO: implement inline JS checking
 if option == 3 or option == 4:
     script_tags = soup.find_all('script')
+    urls = []
     for script in script_tags:
-        var_dump(script)
-        exit()
-        if "src" in script:
-            var_dump(script)
+        if script.has_key("src"):
+            if script["src"][:2] == "//":
+                urls.append("https:" + script["src"])
+            else:  
+                urls.append(script["src"])
+
+    if len(urls) > 0:
+        for url in urls:
+            js_resp = requests.get(url)
+            js_txt = str(js_resp.text)
+
+            imgs = re.findall("(https?:\/\/.*\.(?:jpg|jpeg|webp|gif|png|svg))", js_txt)
+            for iurl in imgs:
+                filen = re.search(r'/([\w_-]+[.](jpg|jpeg|webp|gif|png|svg))$', iurl)
+                if not filen:
+                    print("Skipping " + format(iurl) + " due to lack of compatible image found")
+                    continue
+
+                if os.path.exists(os.path.join(newdir, "js_" + filen.group(1))):
+                    print("Image with this filename already exists, appending random str to new file filename...")
+                    to_append = ''.join(random.choice(string.ascii_letters) for i in range(4))
+                    with open(os.path.join(newdir, "js_" + to_append + "_" + filen.group(1)), 'wb') as f:
+                        if 'http' not in iurl:
+                            # Handle relative image links
+                            url = '{}{}'.format(site, url)
+                        response = requests.get(iurl)
+                        f.write(response.content)
+                else:
+                    with open(os.path.join(newdir, "js_" + filen.group(1)), 'wb') as f:
+                        if 'http' not in iurl:
+                            # Handle relative image links
+                            url = '{}{}'.format(site, url)
+                        response = requests.get(iurl)
+                        f.write(response.content)  
+    else:
+        print("No images found with JS sweep")
 
 # Remove duplicates if applicable
 if remove_dups:
