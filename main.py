@@ -21,7 +21,7 @@ if not os.path.exists(curdir):
 args = sys.argv
 args_c = len(args) - 1
 site = ""
-option = 3
+option = 4
 remove_dups = True
 if args_c == 0:
     print("ERROR: no URL given")
@@ -44,79 +44,80 @@ os.makedirs(newdir)
 newpath = Path(newdir)
 
 # 'Surface-level' (HTML) sweep
-img_tags = soup.find_all('img')
-urls = []
-for img in img_tags:
-    if img.has_key("src"):
-        urls.append(img["src"])
+if option == 1 or option == 4:
+    img_tags = soup.find_all('img')
+    urls = []
+    for img in img_tags:
+        if img.has_key("src"):
+            urls.append(img["src"])
 
-possible_ebay_fulls = []
+    possible_ebay_fulls = []
 
-if len(urls) > 0:
-    for url in urls:
-        filen = re.search(r'/([\w_-]+[.](jpg|jpeg|webp|gif|png|svg))$', url)
-        if not filen:
-            print("Skipping " + str(url) + " due to lack of compatible image found")
-            continue
+    if len(urls) > 0:
+        for url in urls:
+            filen = re.search(r'/([\w_-]+[.](jpg|jpeg|webp|gif|png|svg))$', url)
+            if not filen:
+                print("Skipping " + str(url) + " due to lack of compatible image found")
+                continue
 
-        if os.path.exists(os.path.join(newdir, "html_" + filen.group(1))):
-            print("Image with this filename already exists, appending random str to new file filename...")
-            to_append = ''.join(random.choice(string.ascii_letters) for i in range(4))
-            with open(os.path.join(newdir, "html_" + to_append + "_" + filen.group(1)), 'wb') as f:
-                if 'http' not in url:
-                    # Handle relative image links
-                    url = '{}{}'.format(site, url)
-                response = requests.get(url)
-                f.write(response.content)
-        else:
-            with open(os.path.join(newdir, "html_" + filen.group(1)), 'wb') as f:
-                if 'http' not in url:
-                    # Handle relative image links
-                    url = '{}{}'.format(site, url)
-                response = requests.get(url)
-                f.write(response.content)
+            if os.path.exists(os.path.join(newdir, "html_" + filen.group(1))):
+                print("Image with this filename already exists, appending random str to new file filename...")
+                to_append = ''.join(random.choice(string.ascii_letters) for i in range(4))
+                with open(os.path.join(newdir, "html_" + to_append + "_" + filen.group(1)), 'wb') as f:
+                    if 'http' not in url:
+                        # Handle relative image links
+                        url = '{}{}'.format(site, url)
+                    response = requests.get(url)
+                    f.write(response.content)
+            else:
+                with open(os.path.join(newdir, "html_" + filen.group(1)), 'wb') as f:
+                    if 'http' not in url:
+                        # Handle relative image links
+                        url = '{}{}'.format(site, url)
+                    response = requests.get(url)
+                    f.write(response.content)
 
-        # Flag if URL is eBay image and should be checked again
-        # for full-size version
-        if "i.ebayimg.com/images/g/" in url:
-            possible_ebay_fulls.append(url)
+            # Flag if URL is eBay image and should be checked again
+            # for full-size version
+            if "i.ebayimg.com/images/g/" in url:
+                possible_ebay_fulls.append(url)
 
-else:
-    print("No images found with HTML sweep")
+    else:
+        print("No images found with HTML sweep")
 
-# Check any eBay URLs flagged for full-size check
-if len(possible_ebay_fulls) > 0:
-    for url in possible_ebay_fulls:
-        # Rebuild the URL to likely full-size image URL
-        # Note "s-l1600" is the usual filename for large eBay images
-        url_comps = url.split('/')
-        url_comps[6] = "s-l1600.jpg"
-        test_url = "/".join(url_comps)
+    # Check any eBay URLs flagged for full-size check
+    if len(possible_ebay_fulls) > 0:
+        for url in possible_ebay_fulls:
+            # Rebuild the URL to likely full-size image URL
+            # Note "s-l1600" is the usual filename for large eBay images
+            url_comps = url.split('/')
+            url_comps[6] = "s-l1600.jpg"
+            test_url = "/".join(url_comps)
 
-        filen = re.search(r'/([\w_-]+[.](jpg|jpeg|webp|gif|png|svg))$', test_url)
-        if not filen:
-            print("Skipping " + str(test_url) + " due to lack of compatible image found")
-            continue
+            filen = re.search(r'/([\w_-]+[.](jpg|jpeg|webp|gif|png|svg))$', test_url)
+            if not filen:
+                print("Skipping " + str(test_url) + " due to lack of compatible image found")
+                continue
 
-        if os.path.exists(os.path.join(newdir, "full_" + filen.group(1))):
-            print("Image with this filename already exists, appending random str to new file filename...")
-            to_append = ''.join(random.choice(string.ascii_letters) for i in range(4))
-            with open(os.path.join(newdir, "full_" + to_append + "_" + filen.group(1)), 'wb') as f:
-                if 'http' not in test_url:
-                    # Handle relative image links
-                    test_url = '{}{}'.format(site, test_url)
-                response = requests.get(test_url)
-                f.write(response.content)
-        else:
-            with open(os.path.join(newdir, "full_" + filen.group(1)), 'wb') as f:
-                if 'http' not in test_url:
-                    # Handle relative image links
-                    test_url = '{}{}'.format(site, test_url)
-                response = requests.get(test_url)
-                f.write(response.content)
+            if os.path.exists(os.path.join(newdir, "full_" + filen.group(1))):
+                print("Image with this filename already exists, appending random str to new file filename...")
+                to_append = ''.join(random.choice(string.ascii_letters) for i in range(4))
+                with open(os.path.join(newdir, "full_" + to_append + "_" + filen.group(1)), 'wb') as f:
+                    if 'http' not in test_url:
+                        # Handle relative image links
+                        test_url = '{}{}'.format(site, test_url)
+                    response = requests.get(test_url)
+                    f.write(response.content)
+            else:
+                with open(os.path.join(newdir, "full_" + filen.group(1)), 'wb') as f:
+                    if 'http' not in test_url:
+                        # Handle relative image links
+                        test_url = '{}{}'.format(site, test_url)
+                    response = requests.get(test_url)
+                    f.write(response.content)
 
 # CSS level sweep
-if option > 1:
+if option == 2 or option == 4:
     link_tags = soup.find_all('link')
     urls = [link['href'] for link in link_tags]
 
@@ -159,7 +160,7 @@ if option > 1:
 
 # JS level sweep
 # TODO
-if option > 2:
+if option == 3 or option == 4:
     script_tags = soup.find_all('script')
     for script in script_tags:
         var_dump(script)

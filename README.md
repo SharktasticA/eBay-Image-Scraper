@@ -11,11 +11,12 @@ A quick and dirty tool for downloading all images found on an eBay page. I made 
     python .\main.py arg1 arg2 arg3
 
 * arg1 (required): the URL
-* arg2 (optional): scrape level (default 3, see below)
+* arg2 (optional): scrape types (default 4, see below)
 * arg3 (optional): find & delete duplicates (default 1 = on, 0 = off)
 
-## Scrape levels
+## Scrape types
 
 * 1: Look for images in HTML only
-* 2: Above + look in CSS for images
-* 3: Above + look in JavaScript for images (not yet implemented)
+* 2: Look in CSS for images
+* 3: Look in JavaScript for images (not yet implemented)
+* 4: All of the above 
