@@ -1,10 +1,12 @@
 #  eBay-Image-Scraper
 
-A quick and dirty tool for downloading all images found on an eBay page. I made it to automate some archiving work I'm doing, hence designed as a class I can use in various other applications. I'll eventually expand the tool to support other sites like Amazon, Taobao and WorthPoint in the future (in fact, it should work to a degree on any website), but right now, it's tailored for eBay.
+A quick and dirty tool for downloading all images found on an eBay page. I made it to automate some archiving work I'm doing, hence designed as a class I can use in various other applications I'm developing. I'll eventually expand the tool to support other sites like Amazon, Taobao and WorthPoint in the future (in fact, it should work to a degree on any website), but right now, it's tailored for eBay.
 
 ## Install requirements
 
-    pip3 install bs4 tldextract random-proxies
+    pip3 install bs4 tldextract
+
+__Note:__ During development, I'm also using the `var_dump` package for debugging. You can remove the `var_dump` import in `scraper.py` or also install this package to proceed.
 
 ## Running
 
