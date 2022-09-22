@@ -22,6 +22,6 @@ __Note:__ During development, I'm also using the `var_dump` package for debuggin
 ## Scrape types
 
 * 1: Look for images in HTML only
-* 2: Look in CSS for images
-* 3: Look in JavaScript for images (not yet implemented)
+* 2: Look for images in CSS only
+* 3: Look for images in JS only
 * 4: All of the above 
