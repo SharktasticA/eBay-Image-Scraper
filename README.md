@@ -4,15 +4,16 @@ A quick and dirty tool for downloading all images found on an eBay page. I made 
 
 ## Install requirements
 
-    pip3 install bs4 tldextract
+    pip3 install bs4 tldextract random-proxies 
 
 ## Running
 
-    python .\main.py arg1 arg2 arg3
+    python .\main.py arg1 arg2 arg3 arg4
 
 * arg1 (required): the URL
 * arg2 (optional): scrape types (default 4, see below)
 * arg3 (optional): find & delete duplicates (default 1 = on, 0 = off)
+* arg4 (optional): enable site-specific optimisations (default 1 = on, 0 = off)
 
 ## Scrape types
 
