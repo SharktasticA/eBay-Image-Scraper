@@ -13,7 +13,7 @@ from time import sleep
 # Following to be removed after all development:
 from var_dump import var_dump
 
-class Archiver:
+class Scraper:
     # Possible user agent strings to use
     agents = [ "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:104.0) Gecko/20100101 Firefox/104.0", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36 Edg/105.0.1343.42" ]
 
@@ -239,7 +239,7 @@ class Archiver:
                     print("Removing duplicate " + dup[i])
                     os.remove(os.path.join(self.newdir, dup[i]))
 
-    # Run archiver
+    # Run scraper
     def run(self):
         if self.option == 1 or self.option == 4:
             self.__html_scrape()

@@ -1,13 +1,13 @@
 import sys
-from archiver import *
+from scraper import *
 
-# Get arguments
 args = sys.argv
 args_c = len(args) - 1
 site = ""
 option = 4
 removedups = True
 sspecific = True
+
 if args_c == 0:
     print("ERROR: no URL given")
     exit()
@@ -20,5 +20,5 @@ if args_c > 2:
 if args_c > 3:
     sspecific = bool(int(args[4]))
 
-archiver = Archiver(site, option, removedups, sspecific)
-archiver.run()
+scraper = Scraper(site, option, removedups, sspecific)
+scraper.run()
