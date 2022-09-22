@@ -23,5 +23,5 @@ __Note:__ During development, I'm also using the `var_dump` package for debuggin
 
 * 1: Look for images in HTML only
 * 2: Look for images in CSS only
-* 3: Look for images in JS only
-* 4: All of the above 
+* 3: Look for images in JavaScript only
+* 4: Look for images in HTML, CSS and JavaScript 
