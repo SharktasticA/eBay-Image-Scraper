@@ -65,7 +65,14 @@ class Scraper:
         urls = []
         for img in img_tags:
             if img.has_key("src"):
-                urls.append(img["src"])
+                urls.append(img["src"].split("?")[0])
+
+        a_tags = self.soup.find_all('a')
+        for a in a_tags:
+            if a.has_key("href"):
+                filen = re.search(r'/([\w_-]+[.](jpg|jpeg|webp|gif|png|svg))$', a["href"])
+                if filen:
+                    urls.append(a["href"])
 
         possible_ebay_fulls = []
 
